@@ -6,14 +6,14 @@ from flask import abort, jsonify, request
 import json
 
 
-@app_views.route('/states', methods=['GET'])
+@app_views.route('/states/', methods=['GET'])
 def all_states():
     states_dict = storage.all(State)
     states_list = [state.to_dict() for state in states_dict.values()]
     return states_list
 
 
-@app_views.route('/states/<state_id>', methods=['GET'])
+@app_views.route('/states/<state_id>/', methods=['GET'])
 def states_id(state_id):
     state = storage.get(State, state_id)
     if state:
@@ -22,7 +22,7 @@ def states_id(state_id):
         abort(404)
 
 
-@app_views.route('/states/<state_id>', methods=['DELETE'])
+@app_views.route('/states/<state_id>/', methods=['DELETE'])
 def states_delete(state_id):
     state = storage.get(State, state_id)
     if not state:
@@ -32,7 +32,7 @@ def states_delete(state_id):
     return jsonify('{}'), 201
 
 
-@app_views.route('/states', methods=['POST'])
+@app_views.route('/states/', methods=['POST'])
 def states_post():
     try:
         data = request.get_data()
@@ -47,7 +47,7 @@ def states_post():
     return jsonify(new_state.to_dict()), 201
 
 
-@app_views.route('/states/<state_id>', methods=['PUT'])
+@app_views.route('/states/<state_id>/', methods=['PUT'])
 def states_put(state_id):
     try:
         state_up = storage.get(State, state_id)
