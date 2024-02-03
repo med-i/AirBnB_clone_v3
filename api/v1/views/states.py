@@ -2,15 +2,17 @@
 """
     handles all default RESTFul API actions
 """
-from api.v1.views import app_views
-from models import storage
-from models.state import State
+
 from flask import abort, jsonify, request
 import json
+from models import storage
+from models.state import State
+from api.v1.views import app_views
 
 
 @app_views.route('/states/', methods=['GET'])
 def all_states():
+    """ Get All states """
     states_dict = storage.all(State)
     states_list = [state.to_dict() for state in states_dict.values()]
     return states_list
@@ -18,6 +20,7 @@ def all_states():
 
 @app_views.route('/states/<state_id>', methods=['GET'])
 def states_id(state_id):
+    """ GET state by id """
     state = storage.get(State, state_id)
     if state:
         return state.to_dict(), 201
@@ -27,6 +30,7 @@ def states_id(state_id):
 
 @app_views.route('/states/<state_id>', methods=['DELETE'])
 def states_delete(state_id):
+    """ DELETE state by id """
     state = storage.get(State, state_id)
     if not state:
         abort(404)
@@ -37,6 +41,7 @@ def states_delete(state_id):
 
 @app_views.route('/states/', methods=['POST'])
 def states_post():
+    """ Create new state """
     try:
         data = request.get_data()
         data_object = json.loads(data.decode('utf-8'))
@@ -52,6 +57,7 @@ def states_post():
 
 @app_views.route('/states/<state_id>', methods=['PUT'])
 def states_put(state_id):
+    """ Update state """
     try:
         state_up = storage.get(State, state_id)
         if not state_up:
