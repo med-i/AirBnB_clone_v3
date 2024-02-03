@@ -67,7 +67,8 @@ def cities_put(city_id):
         data = request.get_data()
         data_object = json.loads(data.decode('utf-8'))
         for key, value in data_object.items():
-            setattr(city_up, key, value)
+            if key not in ['id', 'created_at', 'updated_at']:
+                setattr(city_up, key, value)
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
