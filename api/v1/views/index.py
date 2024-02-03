@@ -3,6 +3,7 @@
 from api.v1.views import app_views
 from flask import jsonify
 from models import storage
+from models.amenity import Amenity
 from models.city import City
 from models.place import Place
 from models.review import Review
@@ -18,8 +19,11 @@ def status():
 
 @app_views.route('/stats')
 def count():
+    """
+    retrieves the number of each objects by type
+    """
     response = {
-                "amenities": storage.count(State),
+                "amenities": storage.count(Amenity),
                 "cities": storage.count(City),
                 "places": storage.count(Place),
                 "reviews": storage.count(Review),
