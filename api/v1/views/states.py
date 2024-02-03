@@ -13,7 +13,7 @@ def all_states():
     return states_list
 
 
-@app_views.route('/states/<state_id>/', methods=['GET'])
+@app_views.route('/states/<state_id>', methods=['GET'])
 def states_id(state_id):
     state = storage.get(State, state_id)
     if state:
@@ -22,7 +22,7 @@ def states_id(state_id):
         abort(404)
 
 
-@app_views.route('/states/<state_id>/', methods=['DELETE'])
+@app_views.route('/states/<state_id>', methods=['DELETE'])
 def states_delete(state_id):
     state = storage.get(State, state_id)
     if not state:
@@ -47,7 +47,7 @@ def states_post():
     return jsonify(new_state.to_dict()), 201
 
 
-@app_views.route('/states/<state_id>/', methods=['PUT'])
+@app_views.route('/states/<state_id>', methods=['PUT'])
 def states_put(state_id):
     try:
         state_up = storage.get(State, state_id)
