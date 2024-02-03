@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+"""
+Place objects that handles all default RESTFul API actions
+"""
 from api.v1.views import app_views
 from models import storage
 from models.city import City
@@ -69,7 +72,8 @@ def places_put(place_id):
         data = request.get_data()
         data_object = json.loads(data.decode('utf-8'))
         for key, value in data_object.items():
-            setattr(place_up, key, value)
+            if key not in ['id', 'created_at', 'updated_at']:
+                setattr(place_up, key, value)
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')

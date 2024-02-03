@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+"""
+User object that handles all default RESTFul API actions
+"""
 from api.v1.views import app_views
 from models import storage
 from models.user import User
@@ -58,7 +61,8 @@ def users_put(user_id):
         data = request.get_data()
         data_object = json.loads(data.decode('utf-8'))
         for key, value in data_object.items():
-            setattr(user_up, key, value)
+            if key not in ['id', 'created_at', 'updated_at']:
+                setattr(user_up, key, value)
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
