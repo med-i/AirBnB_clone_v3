@@ -28,6 +28,7 @@ def all_reviews(place_id):
 @app_views.route('/reviews/<review_id>', methods=['GET'],
                  strict_slashes=False)
 def review_by_id(review_id):
+    """ Get Review"""
     review = storage.get(Place, review_id)
     if not review:
         abort(404)
@@ -37,6 +38,7 @@ def review_by_id(review_id):
 @app_views.route('/reviews/<review_id>', methods=['DELETE'],
                  strict_slashes=False)
 def review_delete(review_id):
+    """ Delete Review"""
     review = storage.get(Review, review_id)
     if not review:
         abort(404)
@@ -48,6 +50,7 @@ def review_delete(review_id):
 @app_views.route('/places/<place_id>/reviews', methods=['POST'],
                  strict_slashes=False)
 def places_review_post(place_id):
+    """ ADD review """
     data_object = request.get_json()
     if type(data_object) is not dict:
         abort(400, 'Not a JSON')
@@ -70,6 +73,7 @@ def places_review_post(place_id):
 @app_views.route('/reviews/<review_id>', methods=['PUT'],
                  strict_slashes=False)
 def review_put(review_id):
+    """ Update Review """
     review_up = storage.get(Review, review_id)
     if not review_up:
         abort(404)
