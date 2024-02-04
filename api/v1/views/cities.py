@@ -7,6 +7,7 @@ from models import storage
 from models.city import City
 from models.state import State
 from flask import abort, jsonify, request
+import json
 
 
 @app_views.route('/states/<state_id>/cities', methods=['GET'],
@@ -15,6 +16,9 @@ def all_cities(state_id):
     """ Get Cities by state"""
     city_list = []
     city_dict = storage.all(City)
+    state = storage.get(State, state_id)
+    if state is None:
+        abort(404)
     for city in city_dict.values():
         if state_id == city.state_id:
             city_list.append(city.to_dict())
@@ -40,7 +44,7 @@ def cities_delete(city_id):
         abort(404)
     city.delete()
     storage.save()
-    return jsonify({})
+    return jsonify({}), 200
 
 
 @app_views.route('states/<state_id>/cities', methods=['POST'],
