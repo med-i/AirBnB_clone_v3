@@ -9,33 +9,37 @@ from flask import abort, jsonify, request
 import json
 
 
-@app_views.route('/users', methods=['GET'])
+@app_views.route('/users', methods=['GET'],
+                 strict_slashes=False)
 def all_users():
     users_dict = storage.all(User)
     users_list = [user.to_dict() for user in users_dict.values()]
-    return users_list
+    return jsonify(users_list)
 
 
-@app_views.route('/users/<user_id>', methods=['GET'])
+@app_views.route('/users/<user_id>', methods=['GET'],
+                 strict_slashes=False)
 def users_id(user_id):
     user = storage.get(User, user_id)
     if user:
-        return user.to_dict(), 201
+        return jsonify(user.to_dict())
     else:
         abort(404)
 
 
-@app_views.route('/users/<user_id>', methods=['DELETE'])
+@app_views.route('/users/<user_id>', methods=['DELETE'],
+                 strict_slashes=False)
 def users_delete(user_id):
     user = storage.get(User, user_id)
     if not user:
         abort(404)
-    storage.delete(user)
+    user.delete()
     storage.save()
-    return jsonify('{}'), 201
+    return jsonify({}), 200
 
 
-@app_views.route('/users', methods=['POST'])
+@app_views.route('/users', methods=['POST'],
+                 strict_slashes=False)
 def users_post():
     try:
         data = request.get_data()
@@ -52,7 +56,8 @@ def users_post():
     return jsonify(new_user.to_dict()), 201
 
 
-@app_views.route('/users/<user_id>', methods=['PUT'])
+@app_views.route('/users/<user_id>', methods=['PUT'],
+                 strict_slashes=False)
 def users_put(user_id):
     try:
         user_up = storage.get(User, user_id)
@@ -61,9 +66,9 @@ def users_put(user_id):
         data = request.get_data()
         data_object = json.loads(data.decode('utf-8'))
         for key, value in data_object.items():
-            if key not in ['id', 'created_at', 'updated_at']:
+            if key not in ['id', 'email', 'created_at', 'updated_at']:
                 setattr(user_up, key, value)
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
-    return jsonify(user_up.to_dict()), 201
+    return jsonify(user_up.to_dict()), 200
