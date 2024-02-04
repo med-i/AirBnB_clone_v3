@@ -51,7 +51,6 @@ def states_post():
         if 'name' not in data_object:
             abort(400, 'Missing name')
         new_state = State(**data_object)
-        storage.new(new_state)
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
