@@ -27,7 +27,8 @@ def states_id(state_id):
         abort(404)
 
 
-@app_views.route('/states/<state_id>', methods=['DELETE'], strict_slashes=False)
+@app_views.route('/states/<state_id>', methods=['DELETE'],
+                 strict_slashes=False)
 def states_delete(state_id):
     """ DELETE state by id """
     if state_id is None:
@@ -40,7 +41,8 @@ def states_delete(state_id):
     return jsonify('{}')
 
 
-@app_views.route('/states', methods=['POST'], strict_slashes=False)
+@app_views.route('/states', methods=['POST'],
+                 strict_slashes=False)
 def states_post():
     """ Create new state """
     try:
@@ -56,7 +58,8 @@ def states_post():
     return jsonify(new_state.to_dict()), 201
 
 
-@app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
+@app_views.route('/states/<state_id>', methods=['PUT'],
+                 strict_slashes=False)
 def states_put(state_id):
     """ Update state """
     try:
