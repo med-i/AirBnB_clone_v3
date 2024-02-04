@@ -16,6 +16,9 @@ def all_reviews(place_id):
     """ Get reviews by place"""
     review_list = []
     review_dict = storage.all(Review)
+    place = storage.get(Place, place_id)
+    if place is None:
+        abort(404)
     for review in review_dict.values():
         if place_id == review.place_id:
             review_list.append(review.to_dict())
