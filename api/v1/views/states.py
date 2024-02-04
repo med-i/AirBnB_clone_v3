@@ -73,4 +73,4 @@ def states_put(state_id):
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
-    return jsonify(state_up.to_dict()), 201
+    return jsonify(state_up.to_dict()), 200
