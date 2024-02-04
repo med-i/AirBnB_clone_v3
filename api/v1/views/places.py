@@ -26,7 +26,7 @@ def places_id(place_id):
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
-    return jsonify(place.to_dict()), 201
+    return jsonify(place.to_dict())
 
 
 @app_views.route('/places/<place_id>', methods=['DELETE'])
@@ -36,7 +36,7 @@ def places_delete(place_id):
         abort(404)
     storage.delete(place)
     storage.save()
-    return jsonify('{}'), 201
+    return jsonify({}), 200
 
 
 @app_views.route('/cities/<city_id>/places', methods=['POST'])
@@ -72,9 +72,10 @@ def places_put(place_id):
         data = request.get_data()
         data_object = json.loads(data.decode('utf-8'))
         for key, value in data_object.items():
-            if key not in ['id', 'created_at', 'updated_at']:
+            if key not in ['id', 'created_at', 'updated_at',
+                           'user_id', 'city_id']:
                 setattr(place_up, key, value)
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
-    return jsonify(place_up.to_dict()), 201
+    return jsonify(place_up.to_dict()), 200
