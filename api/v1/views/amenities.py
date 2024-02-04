@@ -6,7 +6,6 @@ from api.v1.views import app_views
 from models import storage
 from models.amenity import Amenity
 from flask import abort, jsonify, request
-import json
 
 
 @app_views.route('/amenities', methods=['GET'],
@@ -45,15 +44,13 @@ def amenities_delete(amenity_id):
                  strict_slashes=False)
 def amenities_post():
     """ Add Amenity """
-    try:
-        data = request.get_data()
-        data_object = json.loads(data.decode('utf-8'))
-        if 'name' not in data_object:
-            abort(400, 'Missing name')
-        new_amenity = Amenity(**data_object)
-        storage.save()
-    except json.JSONDecodeError:
+    data_object = request.get_json()
+    if type(data_object) is not dict:
         abort(400, 'Not a JSON')
+    if 'name' not in data_object:
+        abort(400, 'Missing name')
+    new_amenity = Amenity(**data_object)
+    storage.save()
     return jsonify(new_amenity.to_dict()), 201
 
 
@@ -61,16 +58,14 @@ def amenities_post():
                  strict_slashes=False)
 def amenities_put(amenity_id):
     """ Update Amenity """
-    try:
-        amenity_up = storage.get(Amenity, amenity_id)
-        if not amenity_up:
-            abort(404)
-        data = request.get_data()
-        data_object = json.loads(data.decode('utf-8'))
-        for key, value in data_object.items():
-            if key not in ['id', 'created_at', 'updated_at']:
-                setattr(amenity_up, key, value)
-        storage.save()
-    except json.JSONDecodeError:
+    amenity_up = storage.get(Amenity, amenity_id)
+    if not amenity_up:
+        abort(404)
+    data_object = request.get_json()
+    if type(data_object) is not dict:
         abort(400, 'Not a JSON')
+    for key, value in data_object.items():
+        if key not in ['id', 'created_at', 'updated_at']:
+            setattr(amenity_up, key, value)
+    storage.save()
     return jsonify(amenity_up.to_dict()), 201
