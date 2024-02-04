@@ -2,12 +2,11 @@
 """
     handles all default RESTFul API actions
 """
-
-from flask import abort, jsonify, request
-import json
 from models import storage
 from models.state import State
 from api.v1.views import app_views
+from flask import abort, jsonify, request
+import json
 
 
 @app_views.route('/states', methods=['GET'], strict_slashes=False)
@@ -15,7 +14,7 @@ def all_states():
     """ Get All states """
     states_dict = storage.all(State)
     states_list = [state.to_dict() for state in states_dict.values()]
-    return states_list
+    return jsonify(states_list)
 
 
 @app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
@@ -23,7 +22,7 @@ def states_id(state_id):
     """ GET state by id """
     state = storage.get(State, state_id)
     if state:
-        return state.to_dict(), 201
+        return jsonify(state.to_dict())
     else:
         abort(404)
 
@@ -31,12 +30,14 @@ def states_id(state_id):
 @app_views.route('/states/<state_id>', methods=['DELETE'], strict_slashes=False)
 def states_delete(state_id):
     """ DELETE state by id """
+    if state_id is None:
+        abort(404)
     state = storage.get(State, state_id)
     if not state:
         abort(404)
-    storage.delete(state)
+    state.delete()
     storage.save()
-    return jsonify('{}'), 201
+    return jsonify('{}')
 
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
