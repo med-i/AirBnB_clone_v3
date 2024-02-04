@@ -27,7 +27,7 @@ def cities_id(city_id):
     city = storage.get(City, city_id)
     if not city:
         abort(404)
-    return jsonify(city.to_dict()), 201
+    return jsonify(city.to_dict())
 
 
 @app_views.route('/cities/<city_id>', methods=['DELETE'],
@@ -38,7 +38,7 @@ def cities_delete(city_id):
         abort(404)
     city.delete()
     storage.save()
-    return jsonify('{}'), 201
+    return jsonify({}), 200
 
 
 @app_views.route('states/<state_id>/cities', methods=['POST'],
@@ -75,4 +75,4 @@ def cities_put(city_id):
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
-    return jsonify(city_up.to_dict()), 201
+    return jsonify(city_up.to_dict()), 200
