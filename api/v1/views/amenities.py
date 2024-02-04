@@ -33,11 +33,11 @@ def amenities_id(amenity_id):
 def amenities_delete(amenity_id):
     """ Delete Amenity """
     amenity = storage.get(Amenity, amenity_id)
-    if not amenity:
+    if amenity is None:
         abort(404)
     amenity.delete()
     storage.save()
-    return jsonify('{}')
+    return jsonify({})
 
 
 @app_views.route('/amenities', methods=['POST'],
@@ -59,11 +59,11 @@ def amenities_post():
 def amenities_put(amenity_id):
     """ Update Amenity """
     amenity_up = storage.get(Amenity, amenity_id)
-    if not amenity_up:
+    if amenity_up is None:
         abort(404)
     data_object = request.get_json()
     if type(data_object) is not dict:
-        abort(400, 'Not a JSON')
+        return abort(400, 'Not a JSON')
     for key, value in data_object.items():
         if key not in ['id', 'created_at', 'updated_at']:
             setattr(amenity_up, key, value)
