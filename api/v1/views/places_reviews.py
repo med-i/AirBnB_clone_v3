@@ -12,8 +12,10 @@ from flask import abort, jsonify, request
 import json
 
 
-@app_views.route('/places/<place_id>/reviews', methods=['GET'])
+@app_views.route('/places/<place_id>/reviews', methods=['GET'],
+                 strict_slashes=False)
 def all_reviews(place_id):
+    """ Get reviews by place"""
     review_list = []
     review_dict = storage.all(Review)
     for review in review_dict.values():
@@ -22,25 +24,28 @@ def all_reviews(place_id):
     return jsonify(review_list)
 
 
-@app_views.route('/reviews/<review_id>', methods=['GET'])
-def review_id(review_id):
+@app_views.route('/reviews/<review_id>', methods=['GET'],
+                 strict_slashes=False)
+def review_by_id(review_id):
     review = storage.get(Place, review_id)
     if not review:
         abort(404)
-    return jsonify(review.to_dict()), 201
+    return jsonify(review.to_dict())
 
 
-@app_views.route('/reviews/<review_id>', methods=['DELETE'])
+@app_views.route('/reviews/<review_id>', methods=['DELETE'],
+                 strict_slashes=False)
 def review_delete(review_id):
-    review = storage.get(Place, review_id)
+    review = storage.get(Review, review_id)
     if not review:
         abort(404)
-    storage.delete(review)
+    review.delete()
     storage.save()
-    return jsonify('{}'), 201
+    return jsonify({})
 
 
-@app_views.route('/places/<place_id>/reviews', methods=['POST'])
+@app_views.route('/places/<place_id>/reviews', methods=['POST'],
+                 strict_slashes=False)
 def places_review_post(place_id):
     try:
         data = request.get_data()
@@ -57,14 +62,14 @@ def places_review_post(place_id):
         if not user:
             abort(404)
         new_place_review = Review(**data_object)
-        storage.new(new_place_review)
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
     return jsonify(new_place_review.to_dict()), 201
 
 
-@app_views.route('/reviews/<review_id>', methods=['PUT'])
+@app_views.route('/reviews/<review_id>', methods=['PUT'],
+                 strict_slashes=False)
 def review_put(review_id):
     try:
         review_up = storage.get(Review, review_id)
@@ -73,9 +78,10 @@ def review_put(review_id):
         data = request.get_data()
         data_object = json.loads(data.decode('utf-8'))
         for key, value in data_object.items():
-            if key not in ['id', 'created_at', 'updated_at']:
+            if key not in ['id', 'created_at', 'updated_at',
+                           'user_id', 'place_id']:
                 setattr(review_up, key, value)
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
-    return jsonify(review_up.to_dict()), 201
+    return jsonify(review_up.to_dict()), 200
