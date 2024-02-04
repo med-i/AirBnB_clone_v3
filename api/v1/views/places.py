@@ -16,6 +16,9 @@ def all_places(city_id):
     """ Get places """
     place_list = []
     place_dict = storage.all(Place)
+    city = storage.get(City, city_id)
+    if city is None:
+        abort(404)
     for place in place_dict.values():
         if city_id == place.city_id:
             place_list.append(place.to_dict())
