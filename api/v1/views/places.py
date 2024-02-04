@@ -11,8 +11,10 @@ from flask import abort, jsonify, request
 import json
 
 
-@app_views.route('/cities/<city_id>/places', methods=['GET'])
+@app_views.route('/cities/<city_id>/places', methods=['GET'],
+                 strict_slashes=False)
 def all_places(city_id):
+    """ Get places """
     place_list = []
     place_dict = storage.all(Place)
     for place in place_dict.values():
@@ -21,16 +23,20 @@ def all_places(city_id):
     return jsonify(place_list)
 
 
-@app_views.route('/places/<place_id>', methods=['GET'])
+@app_views.route('/places/<place_id>', methods=['GET'],
+                 strict_slashes=False)
 def places_id(place_id):
+    """ Get place """
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
     return jsonify(place.to_dict())
 
 
-@app_views.route('/places/<place_id>', methods=['DELETE'])
+@app_views.route('/places/<place_id>', methods=['DELETE'],
+                 strict_slashes=False)
 def places_delete(place_id):
+    """ DELETE PLACE"""
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
@@ -39,8 +45,10 @@ def places_delete(place_id):
     return jsonify({}), 200
 
 
-@app_views.route('/cities/<city_id>/places', methods=['POST'])
+@app_views.route('/cities/<city_id>/places', methods=['POST'],
+                 strict_slashes=False)
 def places_post(city_id):
+    """ ADD place """
     try:
         data = request.get_data()
         data_object = json.loads(data.decode('utf-8'))
@@ -63,8 +71,10 @@ def places_post(city_id):
     return jsonify(new_place.to_dict()), 201
 
 
-@app_views.route('places/<place_id>', methods=['PUT'])
+@app_views.route('places/<place_id>', methods=['PUT'],
+                 strict_slashes=False)
 def places_put(place_id):
+    """ Update place"""
     try:
         place_up = storage.get(Place, place_id)
         if not place_up:
