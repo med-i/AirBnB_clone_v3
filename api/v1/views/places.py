@@ -8,7 +8,6 @@ from models.city import City
 from models.user import User
 from models.place import Place
 from flask import abort, jsonify, request
-import json
 
 
 @app_views.route('/cities/<city_id>/places', methods=['GET'],
@@ -49,24 +48,22 @@ def places_delete(place_id):
                  strict_slashes=False)
 def places_post(city_id):
     """ ADD place """
-    try:
-        data = request.get_data()
-        data_object = json.loads(data.decode('utf-8'))
-        city = storage.get(City, city_id)
-        if not city:
-            abort(404)
-        data_object['city_id'] = city_id
-        if 'user_id' not in data_object:
-            abort(400, 'Missing user_id')
-        if 'name' not in data_object:
-            abort(400, 'Missing name')
-        user = storage.get(User, data_object['user_id'])
-        if not user:
-            abort(404)
-        new_place = Place(**data_object)
-        storage.save()
-    except json.JSONDecodeError:
+    data_object = request.get_json()
+    if type(data_object) is not dict:
         abort(400, 'Not a JSON')
+    city = storage.get(City, city_id)
+    if not city:
+        abort(404)
+    data_object['city_id'] = city_id
+    if 'user_id' not in data_object:
+        abort(400, 'Missing user_id')
+    if 'name' not in data_object:
+        abort(400, 'Missing name')
+    user = storage.get(User, data_object['user_id'])
+    if not user:
+        abort(404)
+    new_place = Place(**data_object)
+    storage.save()
     return jsonify(new_place.to_dict()), 201
 
 
@@ -74,17 +71,15 @@ def places_post(city_id):
                  strict_slashes=False)
 def places_put(place_id):
     """ Update place"""
-    try:
-        place_up = storage.get(Place, place_id)
-        if not place_up:
-            abort(404)
-        data = request.get_data()
-        data_object = json.loads(data.decode('utf-8'))
-        for key, value in data_object.items():
-            if key not in ['id', 'created_at', 'updated_at',
-                           'user_id', 'city_id']:
-                setattr(place_up, key, value)
-        storage.save()
-    except json.JSONDecodeError:
+    place_up = storage.get(Place, place_id)
+    if not place_up:
+        abort(404)
+    data_object = request.get_json()
+    if type(data_object) is not dict:
         abort(400, 'Not a JSON')
+    for key, value in data_object.items():
+        if key not in ['id', 'created_at',
+                       'updated_at', 'user_id', 'city_id']:
+            setattr(place_up, key, value)
+    storage.save()
     return jsonify(place_up.to_dict()), 200
