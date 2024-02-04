@@ -23,7 +23,7 @@ def amenities_id(amenity_id):
     """ Get amenity by id"""
     amenity = storage.get(Amenity, amenity_id)
     if amenity:
-        return jsonify(amenity.to_dict()), 201
+        return jsonify(amenity.to_dict()),
     else:
         abort(404)
 
@@ -37,7 +37,7 @@ def amenities_delete(amenity_id):
         abort(404)
     amenity.delete()
     storage.save()
-    return jsonify('{}'), 201
+    return jsonify('{}')
 
 
 @app_views.route('/amenities', methods=['POST'],
@@ -46,11 +46,11 @@ def amenities_post():
     """ Add Amenity """
     data_object = request.get_json()
     if type(data_object) is not dict:
-        abort(400, 'Not a JSON')
+        return abort(400, 'Not a JSON')
     if 'name' not in data_object:
-        abort(400, 'Missing name')
+        return abort(400, 'Missing name')
     new_amenity = Amenity(**data_object)
-    storage.save()
+    new_amenity.save()
     return jsonify(new_amenity.to_dict()), 201
 
 
@@ -68,4 +68,4 @@ def amenities_put(amenity_id):
         if key not in ['id', 'created_at', 'updated_at']:
             setattr(amenity_up, key, value)
     storage.save()
-    return jsonify(amenity_up.to_dict()), 201
+    return jsonify(amenity_up.to_dict()), 200
