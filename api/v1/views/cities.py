@@ -7,6 +7,7 @@ from models import storage
 from models.city import City
 from models.state import State
 from flask import abort, jsonify, request
+import json
 
 
 @app_views.route('/states/<state_id>/cities', methods=['GET'],
@@ -47,17 +48,19 @@ def cities_delete(city_id):
                  strict_slashes=False)
 def cities_post(state_id):
     """ Add city """
-    data_object = request.get_json
-    if type(data_object) is not dict:
+    try:
+        data = request.get_data()
+        data_object = json.loads(data.decode('utf-8'))
+        state = storage.get(State, state_id)
+        if not state:
+            abort(404)
+        data_object['state_id'] = state_id
+        if 'name' not in data_object:
+            abort(400, 'Missing name')
+        new_city = City(**data_object)
+        storage.save()
+    except json.JSONDecodeError:
         abort(400, 'Not a JSON')
-    state = storage.get(State, state_id)
-    if not state:
-        abort(404)
-    data_object['state_id'] = state_id
-    if 'name' not in data_object:
-        abort(400, 'Missing name')
-    new_city = City(**data_object)
-    storage.save()
     return jsonify(new_city.to_dict()), 201
 
 
@@ -65,14 +68,16 @@ def cities_post(state_id):
                  strict_slashes=False)
 def cities_put(city_id):
     """ Update city"""
-    city_up = storage.get(City, city_id)
-    if not city_up:
-        abort(404)
-    data_object = request.get_json
-    if type(data_object) is not dict:
+    try:
+        city_up = storage.get(City, city_id)
+        if not city_up:
+            abort(404)
+        data = request.get_data()
+        data_object = json.loads(data.decode('utf-8'))
+        for key, value in data_object.items():
+            if key not in ['id', 'state_id', 'created_at', 'updated_at']:
+                setattr(city_up, key, value)
+        storage.save()
+    except json.JSONDecodeError:
         abort(400, 'Not a JSON')
-    for key, value in data_object.items():
-        if key not in ['id', 'state_id', 'created_at', 'updated_at']:
-            setattr(city_up, key, value)
-    storage.save()
     return jsonify(city_up.to_dict()), 200
