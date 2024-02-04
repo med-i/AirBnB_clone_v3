@@ -40,9 +40,9 @@ def places_delete(place_id):
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
-    storage.delete(place)
+    place.delete()
     storage.save()
-    return jsonify({}), 200
+    return jsonify({})
 
 
 @app_views.route('/cities/<city_id>/places', methods=['POST'],
@@ -64,7 +64,6 @@ def places_post(city_id):
         if not user:
             abort(404)
         new_place = Place(**data_object)
-        storage.new(new_place)
         storage.save()
     except json.JSONDecodeError:
         abort(400, 'Not a JSON')
