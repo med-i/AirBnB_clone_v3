@@ -29,7 +29,7 @@ def all_reviews(place_id):
                  strict_slashes=False)
 def review_by_id(review_id):
     """ Get Review"""
-    review = storage.get(Place, review_id)
+    review = storage.get(Review, review_id)
     if not review:
         abort(404)
     return jsonify(review.to_dict())
